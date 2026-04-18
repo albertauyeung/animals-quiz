@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Guess the Animal! - 100 Fun Riddles for Kids</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #a1c4fd 100%);
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 2.5em;
+    text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+    margin-bottom: 10px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #34495e;
+    font-size: 1.2em;
+    margin-bottom: 30px;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transition: transform 0.2s;
+    border: 4px solid #fff;
+  }
+  .card:hover { transform: translateY(-4px); }
+  .num {
+    display: inline-block;
+    background: #ff6b6b;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+  }
+  .hints {
+    color: #2c3e50;
+    font-size: 1em;
+    line-height: 1.5;
+    margin: 10px 0;
+  }
+  .hints li { margin-bottom: 6px; }
+  button {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    font-family: inherit;
+    margin-top: 10px;
+    transition: all 0.2s;
+  }
+  button:hover { transform: scale(1.03); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+  .answer {
+    display: none;
+    margin-top: 12px;
+    padding: 12px;
+    background: #d4edda;
+    border-left: 5px solid #28a745;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #155724;
+    text-align: center;
+  }
+  .answer.show { display: block; animation: pop 0.3s ease-out; }
+  @keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .emoji { font-size: 1.5em; }
+  .answer img {
+    display: block;
+    max-width: 100%;
+    max-height: 200px;
+    margin: 10px auto 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+  .loading {
+    font-size: 0.85em;
+    color: #155724;
+    font-style: italic;
+    margin-top: 6px;
+  }
+  .credit {
+    font-size: 0.7em;
+    color: #666;
+    text-align: center;
+    margin-top: 4px;
+    font-weight: normal;
+  }
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #555;
+    font-size: 0.9em;
+  }
+</style>
+</head>
+<body>
+<h1>🐾 Guess the Animal! 🐾</h1>
+<p class="subtitle">Read the three clues and guess which animal it is. Click the button to reveal the answer!</p>
+<div class="container" id="quiz"></div>
+<footer>Made with love for curious kids 🌈</footer>
+
+<script>
+const questions = [
+  { hints: ["I have a long trunk and huge floppy ears.", "I am the largest land animal on Earth.", "I love to spray water with my nose."], answer: "Elephant 🐘", wiki: "African_bush_elephant" },
+  { hints: ["I have a long neck that reaches tall trees.", "My spotted coat helps me hide in the savanna.", "I am the tallest animal in the world."], answer: "Giraffe 🦒", wiki: "Giraffe" },
+  { hints: ["I am the king of the jungle.", "I have a big fluffy mane around my head.", "I roar very loudly."], answer: "Lion 🦁", wiki: "Lion" },
+  { hints: ["I have orange fur with black stripes.", "I am a powerful big cat from Asia.", "I love to swim in rivers."], answer: "Tiger 🐅", wiki: "Tiger" },
+  { hints: ["I live in the icy Arctic.", "I have thick white fur to stay warm.", "I am a great swimmer and hunter of seals."], answer: "Polar Bear 🐻‍❄️", wiki: "Polar_bear" },
+  { hints: ["I live in bamboo forests in China.", "I have black and white fur.", "I love munching on bamboo all day."], answer: "Panda 🐼", wiki: "Giant_panda" },
+  { hints: ["I hop on two strong legs.", "I carry my baby in a pouch.", "I am from Australia."], answer: "Kangaroo 🦘", wiki: "Kangaroo" },
+  { hints: ["I sleep most of the day in eucalyptus trees.", "I have fluffy grey ears and a big black nose.", "I live in Australia."], answer: "Koala 🐨", wiki: "Koala" },
+  { hints: ["I live in the ocean and I am huge.", "I sing songs underwater.", "I breathe through a hole on top of my head."], answer: "Whale 🐋", wiki: "Humpback_whale" },
+  { hints: ["I am very smart and friendly.", "I swim in oceans and love to jump.", "I talk with clicks and whistles."], answer: "Dolphin 🐬", wiki: "Common_bottlenose_dolphin" },
+  { hints: ["I have eight arms and no bones.", "I can change my color to hide.", "I squirt ink when I am scared."], answer: "Octopus 🐙", wiki: "Octopus" },
+  { hints: ["I have sharp teeth and a fin on my back.", "I live in the ocean.", "People are often afraid of me."], answer: "Shark 🦈", wiki: "Great_white_shark" },
+  { hints: ["I carry my home on my back.", "I move very, very slowly.", "I leave a shiny trail behind me."], answer: "Snail 🐌", wiki: "Snail" },
+  { hints: ["I spin webs to catch my food.", "I have eight legs.", "Some people are scared of me."], answer: "Spider 🕷️", wiki: "Spider" },
+  { hints: ["I am tiny and work with my friends.", "I can carry things much bigger than me.", "I live in a colony with a queen."], answer: "Ant 🐜", wiki: "Ant" },
+  { hints: ["I make sweet honey.", "I have yellow and black stripes.", "I buzz around flowers."], answer: "Bee 🐝", wiki: "Western_honey_bee" },
+  { hints: ["I start as a caterpillar.", "I have beautiful colorful wings.", "I love flying around flowers."], answer: "Butterfly 🦋", wiki: "Monarch_butterfly" },
+  { hints: ["I live in a pond and say 'ribbit'.", "I started my life as a tadpole.", "I catch bugs with my long sticky tongue."], answer: "Frog 🐸", wiki: "Frog" },
+  { hints: ["I slither on the ground with no legs.", "I have scales on my body.", "Some of my cousins are venomous."], answer: "Snake 🐍", wiki: "Snake" },
+  { hints: ["I have a hard shell on my back.", "I move slowly on land.", "I can hide my head and legs inside."], answer: "Turtle 🐢", wiki: "Turtle" },
+  { hints: ["I have huge jaws and sharp teeth.", "I live in rivers and swamps.", "I look like a log floating in water."], answer: "Crocodile 🐊", wiki: "Nile_crocodile" },
+  { hints: ["I say 'moo' in the farm.", "I give milk that people drink.", "I have spots on my body."], answer: "Cow 🐄", wiki: "Cattle" },
+  { hints: ["I say 'oink oink'.", "I have a curly tail and pink skin.", "I love to roll in the mud."], answer: "Pig 🐷", wiki: "Pig" },
+  { hints: ["I say 'baa baa'.", "My fluffy wool is used to make sweaters.", "I eat grass in the meadow."], answer: "Sheep 🐑", wiki: "Sheep" },
+  { hints: ["I say 'cluck cluck'.", "I lay eggs for breakfast.", "I have feathers and a red comb."], answer: "Chicken 🐔", wiki: "Chicken" },
+  { hints: ["I say 'neigh'.", "People ride on my back.", "I run very fast with four hooves."], answer: "Horse 🐴", wiki: "Horse" },
+  { hints: ["I am a man's best friend.", "I wag my tail when I am happy.", "I bark: 'woof woof!'"], answer: "Dog 🐶", wiki: "Dog" },
+  { hints: ["I purr when I am happy.", "I chase mice and balls of yarn.", "I say 'meow'."], answer: "Cat 🐱", wiki: "Cat" },
+  { hints: ["I have long ears and a fluffy tail.", "I hop around and love carrots.", "I live in a burrow."], answer: "Rabbit 🐰", wiki: "Rabbit" },
+  { hints: ["I am a tiny rodent with a long tail.", "I love cheese.", "Cats like to chase me."], answer: "Mouse 🐭", wiki: "House_mouse" },
+  { hints: ["I have big cheek pouches to store nuts.", "I have a bushy tail.", "I love to climb trees."], answer: "Squirrel 🐿️", wiki: "Eastern_gray_squirrel" },
+  { hints: ["I live in trees and love bananas.", "I can swing from branch to branch.", "I look a bit like a human."], answer: "Monkey 🐒", wiki: "Monkey" },
+  { hints: ["I am a big, strong ape.", "I live in the forests of Africa.", "I beat my chest when I feel powerful."], answer: "Gorilla 🦍", wiki: "Gorilla" },
+  { hints: ["I live in the water and on land.", "My skin is smooth and slimy.", "I hop and catch flies."], answer: "Frog 🐸", wiki: "Red-eyed_tree_frog" },
+  { hints: ["I have a long bushy tail and red fur.", "I am clever and sneaky.", "I live in forests and dens."], answer: "Fox 🦊", wiki: "Red_fox" },
+  { hints: ["I howl at the moon.", "I travel in a pack.", "I look like a wild dog."], answer: "Wolf 🐺", wiki: "Wolf" },
+  { hints: ["I have black and white stripes.", "I look like a horse.", "I live on the African savanna."], answer: "Zebra 🦓", wiki: "Plains_zebra" },
+  { hints: ["I have a big horn on my nose.", "I have thick, tough skin.", "I live in Africa or Asia."], answer: "Rhinoceros 🦏", wiki: "Rhinoceros" },
+  { hints: ["I live in rivers in Africa.", "I have a huge mouth and tiny ears.", "I look chubby but I can run fast."], answer: "Hippopotamus 🦛", wiki: "Hippopotamus" },
+  { hints: ["I have a long neck and live in the desert.", "I store fat in my humps.", "I can go days without water."], answer: "Camel 🐪", wiki: "Camel" },
+  { hints: ["I am a bird that cannot fly.", "I am the fastest runner on two legs.", "I bury my head in the sand... some say."], answer: "Ostrich", wiki: "Common_ostrich" },
+  { hints: ["I am a bird that cannot fly.", "I live in Antarctica.", "I waddle on the ice and love to swim."], answer: "Penguin 🐧", wiki: "Emperor_penguin" },
+  { hints: ["I am a very colorful bird that talks.", "I live in the rainforest.", "I can copy words people say."], answer: "Parrot 🦜", wiki: "Parrot" },
+  { hints: ["I am a bird of the night.", "I say 'hoot hoot'.", "I can turn my head almost all the way around."], answer: "Owl 🦉", wiki: "Owl" },
+  { hints: ["I am a big bird that hunts from the sky.", "I have sharp eyes and sharp claws.", "I am a symbol of freedom."], answer: "Eagle 🦅", wiki: "Bald_eagle" },
+  { hints: ["I am tiny and I flap my wings very fast.", "I love to drink nectar from flowers.", "I can hover in the air."], answer: "Hummingbird", wiki: "Hummingbird" },
+  { hints: ["I have a big bright colorful tail.", "I spread my feathers like a fan.", "I am often seen in gardens and parks."], answer: "Peacock 🦚", wiki: "Peafowl" },
+  { hints: ["I have a long beak that scoops fish.", "I have a pouch under my chin.", "I live near water."], answer: "Pelican", wiki: "Pelican" },
+  { hints: ["I am pink and stand on one leg.", "I eat shrimp that makes my color.", "I live near lakes and lagoons."], answer: "Flamingo 🦩", wiki: "Flamingo" },
+  { hints: ["I am the largest rodent in the world.", "I love to swim and live in groups.", "I come from South America."], answer: "Capybara", wiki: "Capybara" },
+  { hints: ["I have sharp quills all over my body.", "I roll into a ball when scared.", "I eat bugs and small creatures."], answer: "Hedgehog 🦔", wiki: "Hedgehog" },
+  { hints: ["I have a long body and short legs.", "I am playful and live near water.", "I crack shells on my belly with a rock."], answer: "Otter 🦦", wiki: "Sea_otter" },
+  { hints: ["I build dams in rivers.", "I have a flat tail.", "I chew on wood with my big front teeth."], answer: "Beaver 🦫", wiki: "Beaver" },
+  { hints: ["I carry my baby in my pouch.", "I have a long snout and stripes on my back.", "I can play dead when I am scared."], answer: "Opossum", wiki: "Virginia_opossum" },
+  { hints: ["I am black and white and stinky.", "I spray a smelly liquid when scared.", "I come out mostly at night."], answer: "Skunk 🦨", wiki: "Striped_skunk" },
+  { hints: ["I have a mask on my face.", "I use my tiny hands like fingers.", "I sometimes sneak into trash cans."], answer: "Raccoon 🦝", wiki: "Raccoon" },
+  { hints: ["I am the fastest land animal.", "I have spots all over my body.", "I live on the African plains."], answer: "Cheetah", wiki: "Cheetah" },
+  { hints: ["I am a big cat with spots.", "I am very strong and I can climb trees with my prey.", "I live in jungles."], answer: "Jaguar", wiki: "Jaguar" },
+  { hints: ["I am a spotted big cat.", "I live in Africa and Asia.", "I can climb trees to hide my food."], answer: "Leopard", wiki: "Leopard" },
+  { hints: ["I am a big cat that lives in snowy mountains.", "I have a long furry tail for balance.", "My coat is grey with black spots."], answer: "Snow Leopard", wiki: "Snow_leopard" },
+  { hints: ["I am very tiny and I glow at night.", "I fly around in summer.", "Kids love to catch me in jars."], answer: "Firefly", wiki: "Firefly" },
+  { hints: ["I have a long tongue like a whip.", "I change colors based on my mood.", "My eyes move in different directions."], answer: "Chameleon 🦎", wiki: "Chameleon" },
+  { hints: ["I am a lizard that can climb walls.", "I have sticky toes.", "You might see me in tropical houses."], answer: "Gecko 🦎", wiki: "Gecko" },
+  { hints: ["I have five arms and live in the ocean.", "I can grow back a lost arm.", "I look like a shape in the sky."], answer: "Starfish ⭐", wiki: "Starfish" },
+  { hints: ["I have a hard shell and live in water.", "I walk sideways on the sand.", "I have two strong claws."], answer: "Crab 🦀", wiki: "Crab" },
+  { hints: ["I live in the ocean and have a hard shell.", "I have big front claws.", "People often eat me with butter."], answer: "Lobster 🦞", wiki: "Lobster" },
+  { hints: ["I am tiny and pink and live in the ocean.", "I look like a little curled worm.", "I am often in soup or on the grill."], answer: "Shrimp 🦐", wiki: "Shrimp" },
+  { hints: ["I am a slimy sea creature with tentacles.", "I sting when you touch me.", "I look like a wiggly umbrella."], answer: "Jellyfish 🪼", wiki: "Jellyfish" },
+  { hints: ["I am a fish but I look like a horse.", "The daddy carries the babies in his pouch.", "I live among coral reefs."], answer: "Seahorse 🐉", wiki: "Seahorse" },
+  { hints: ["I am a huge sea mammal with tusks.", "I live on icy shores.", "I have big whiskers and flippers."], answer: "Walrus", wiki: "Walrus" },
+  { hints: ["I am a sea mammal with flippers.", "I bark like a dog.", "I balance balls on my nose in shows."], answer: "Seal 🦭", wiki: "Harbor_seal" },
+  { hints: ["I glide silently through the ocean.", "I have a flat body and a long tail.", "I look like a kite with fins."], answer: "Stingray", wiki: "Stingray" },
+  { hints: ["I am a bright orange fish with white stripes.", "I live in a sea anemone.", "A famous movie was made about finding me."], answer: "Clownfish 🐠", wiki: "Clownfish" },
+  { hints: ["I am a round puffy fish.", "I blow up when I am scared.", "I have tiny spikes on my body."], answer: "Pufferfish", wiki: "Tetraodontidae" },
+  { hints: ["I have four legs and a tough shell.", "I live in the ocean and swim well.", "I lay my eggs on the beach."], answer: "Sea Turtle 🐢", wiki: "Sea_turtle" },
+  { hints: ["I am a big reptile with a spiky tail.", "I look like a little dragon.", "I live on islands and love the sun."], answer: "Iguana 🦎", wiki: "Green_iguana" },
+  { hints: ["I am a giant lizard from Indonesia.", "I have a scary bite.", "I am the largest lizard in the world."], answer: "Komodo Dragon 🐉", wiki: "Komodo_dragon" },
+  { hints: ["I live in trees in the rainforest.", "I move very very slowly.", "I hang upside down most of the day."], answer: "Sloth 🦥", wiki: "Sloth" },
+  { hints: ["I have a long sticky tongue for ants.", "My body is covered in hair.", "I have no teeth."], answer: "Anteater", wiki: "Giant_anteater" },
+  { hints: ["I am covered in hard bony plates.", "I can curl up into a ball.", "I live in warm places like Texas."], answer: "Armadillo", wiki: "Nine-banded_armadillo" },
+  { hints: ["I have a big rack of antlers.", "I am gentle and live in forests.", "Rudolph is one of my kind."], answer: "Deer 🦌", wiki: "Deer" },
+  { hints: ["I am a large deer that lives in cold forests.", "Males have huge flat antlers.", "I love swampy areas."], answer: "Moose 🫎", wiki: "Moose" },
+  { hints: ["I am fluffy and live in cold mountains.", "People use my wool for sweaters.", "I am a cousin of the camel."], answer: "Llama 🦙", wiki: "Llama" },
+  { hints: ["I have two big curly horns.", "I climb high, rocky mountains.", "I love to headbutt other males."], answer: "Mountain Goat", wiki: "Mountain_goat" },
+  { hints: ["I am a tiny flying mammal.", "I use sound to 'see' in the dark.", "I hang upside down in caves."], answer: "Bat 🦇", wiki: "Bat" },
+  { hints: ["I have a long tail and live in water.", "I have big whiskers like a cat.", "I look like a fish but I have lungs."], answer: "Catfish 🐟", wiki: "Catfish" },
+  { hints: ["I am a huge fish in rivers.", "I am flat and silver.", "People love to fish for me."], answer: "Salmon 🐟", wiki: "Salmon" },
+  { hints: ["I am green and I croak in ponds.", "I have bumpy skin (unlike my cousin).", "I like to live on land more than in water."], answer: "Toad", wiki: "Toad" },
+  { hints: ["I am a small creature that lives in soil.", "I wiggle through the dirt.", "I help plants grow."], answer: "Earthworm 🪱", wiki: "Earthworm" },
+  { hints: ["I have many many legs.", "I am long and wiggly.", "Some say I have 100 legs, but it's fewer!"], answer: "Centipede", wiki: "Centipede" },
+  { hints: ["I am a tiny biting bug.", "I can jump very high for my size.", "I often live on dogs and cats."], answer: "Flea", wiki: "Flea" },
+  { hints: ["I make a high-pitched buzz.", "I bite people to drink their blood.", "I come out a lot in summer."], answer: "Mosquito 🦟", wiki: "Mosquito" },
+  { hints: ["I am shiny and I crawl on the floor.", "People scream when they see me in the kitchen.", "I can survive almost anything."], answer: "Cockroach 🪳", wiki: "Cockroach" },
+  { hints: ["I am green and I pray with my front legs.", "I can turn my head all the way around.", "I catch bugs with lightning speed."], answer: "Praying Mantis", wiki: "Mantis" },
+  { hints: ["I have a stinger on my tail.", "I have two claws like a tiny lobster.", "I live in the desert."], answer: "Scorpion 🦂", wiki: "Scorpion" },
+  { hints: ["I have a long tail and sharp teeth.", "I live in walls and sewers.", "I am bigger than a mouse."], answer: "Rat 🐀", wiki: "Brown_rat" },
+  { hints: ["I live in a small bowl of water.", "I swim around blowing bubbles.", "I am a popular pet fish."], answer: "Goldfish 🐠", wiki: "Goldfish" },
+  { hints: ["I have a long, pointy nose called a bill.", "I have webbed feet and I lay eggs.", "I am a mammal — surprising, right?"], answer: "Platypus", wiki: "Platypus" },
+  { hints: ["I have long legs and I cross the road.", "I am a bird that eats frogs and snakes.", "I stand on one leg in tall grass."], answer: "Heron", wiki: "Great_blue_heron" },
+  { hints: ["I have a pointy beak that drills wood.", "I tap tap tap on tree trunks.", "I look for bugs inside trees."], answer: "Woodpecker", wiki: "Woodpecker" },
+  { hints: ["I am tiny and live in a hive.", "I have stripes and I buzz.", "Unlike bees, I can sting many times."], answer: "Wasp", wiki: "Wasp" },
+  { hints: ["I have a big round body and eight legs.", "I live underwater like an octopus cousin.", "I have a hard beak hidden inside."], answer: "Squid 🦑", wiki: "Squid" },
+  { hints: ["I am a long snake that squeezes my prey.", "I can be very, very big.", "I live in jungles and near rivers."], answer: "Python", wiki: "Pythonidae" }
+];
+
+const quiz = document.getElementById('quiz');
+questions.forEach((q, i) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <span class="num">Question ${i + 1}</span>
+    <ul class="hints">
+      <li>${q.hints[0]}</li>
+      <li>${q.hints[1]}</li>
+      <li>${q.hints[2]}</li>
+    </ul>
+    <button onclick="reveal(${i})">🔍 Reveal Answer</button>
+    <div class="answer" id="answer-${i}">
+      <div>It's a <span class="emoji">${q.answer}</span>!</div>
+      <div class="image-slot" id="img-${i}"></div>
+    </div>
+  `;
+  quiz.appendChild(card);
+});
+
+const imageCache = {};
+
+async function fetchImage(wikiTitle) {
+  if (imageCache[wikiTitle]) return imageCache[wikiTitle];
+  try {
+    const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiTitle)}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const img = data.thumbnail?.source || data.originalimage?.source || null;
+    imageCache[wikiTitle] = img;
+    return img;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function reveal(i) {
+  const answer = document.getElementById('answer-' + i);
+  answer.classList.toggle('show');
+  if (!answer.classList.contains('show')) return;
+
+  const slot = document.getElementById('img-' + i);
+  if (slot.dataset.loaded) return;
+  slot.dataset.loaded = 'loading';
+  slot.innerHTML = '<div class="loading">Loading picture...</div>';
+
+  const imgUrl = await fetchImage(questions[i].wiki);
+  if (imgUrl) {
+    slot.innerHTML = `<img src="${imgUrl}" alt="${questions[i].answer}" loading="lazy"><div class="credit">Image: Wikipedia</div>`;
+    slot.dataset.loaded = 'done';
+  } else {
+    slot.innerHTML = '<div class="credit">(No picture available)</div>';
+    slot.dataset.loaded = 'failed';
+  }
+}
+</script>
+</body>
+</html>
