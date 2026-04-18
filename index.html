@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Guess the Animal & Plant! - Fun Riddles for Kids</title>
 <style>
   * { box-sizing: border-box; }
@@ -160,6 +161,27 @@
     margin-top: 40px;
     color: #555;
     font-size: 0.9em;
+  }
+  @media (max-width: 640px) {
+    body { padding: 12px; }
+    h1 { font-size: 1.7em; margin-bottom: 6px; }
+    .subtitle { font-size: 1em; margin-bottom: 14px; }
+    .tabs { gap: 8px; margin-bottom: 16px; }
+    .tab { padding: 8px 18px; font-size: 1em; }
+    .container { gap: 10px; }
+    .card { padding: 14px 14px; border-radius: 14px; }
+    .row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .num { font-size: 0.85em; padding: 3px 10px; }
+    .hints { font-size: 0.95em; padding-left: 20px; }
+    .card button { width: 100%; padding: 12px; font-size: 1em; }
+    .answer { font-size: 1em; padding: 10px; }
+    .emoji { font-size: 1.35em; }
+    .cn { font-size: 1.05em; letter-spacing: 1px; }
+    .answer img { max-height: 160px; }
   }
 </style>
 </head>
